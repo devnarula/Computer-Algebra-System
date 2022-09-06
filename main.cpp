@@ -83,6 +83,8 @@ node* ast(vector<string> post) {
             node* nod = new node;
             variable var = strtovar(x);
             nod->val = var;
+            nod->left = NULL;
+            nod->right = NULL;
             s.push(nod);
         }
         if (operation(x)) {
@@ -122,12 +124,16 @@ node *add(node *l, node *r) {
         node *n = new node;
         variable var = {to_string((r->val).coeff+(l->val).coeff), (r->val).coeff+(l->val).coeff, 0};
         n->val = var;
+        n->left = NULL;
+        n->right = NULL;
         return n;
     }
     if ((r->val).val == "x" and (l->val).val == "x" and (r->val).deg == (l->val).deg) {
         variable var = {"x",(r->val).coeff+(l->val).coeff,(r->val).deg};
         node *n = new node;
         n->val = var;
+        n->left = NULL;
+        n->right = NULL;
         return n;
     }
     variable var = {"+",-1,-1};
@@ -135,6 +141,8 @@ node *add(node *l, node *r) {
     n->val = var;
     n->left = l;
     n->right = r;
+    n->left = NULL;
+    n->right = NULL;
     return n;
 }
 node *subhelp(node *r) {
@@ -173,6 +181,11 @@ node *mult(node *l, node *r) {
     }
     if (isint((r->val).val) and isint((l->val).val)) {
         variable var = {to_string(stoi((l->val).val)*stoi((r->val).val)),stoi((l->val).val)*stoi((r->val).val),0};
+        node *n = new node;
+        n->val = var;
+        n->left = NULL;
+        n->right = NULL;
+        return n;
     }
 
 }
@@ -184,6 +197,8 @@ node *expt(node *l, node *r) {
         variable var = {"1",1,0};
         node *n = new node;
         n->val = var;
+        n->left = NULL;
+        n->right = NULL;
         return n;
     }
     if (isint((r->val).val) and stoi((r->val).val) == 1) {
@@ -194,6 +209,8 @@ node *expt(node *l, node *r) {
         variable var = {to_string(val),val,0};
         node *n = new node;
         n->val = var;
+        n->left = NULL;
+        n->right = NULL;
         return n;
     }
     if ((l->val).deg > 0 and isint((r->val).val)) {
@@ -222,12 +239,21 @@ bool comparevar(variable a, variable b) {
     return a.val == b.val and a.coeff == b.coeff and a.deg == b.deg;
 }
 bool comparetree(node *a, node *b) {
+    cout<<"comparing trees\n";
     if (a == NULL and b == NULL) {
         return true;
     }
     if (a != NULL and b != NULL)
-    return comparevar(a->val,b->val) and comparetree(a->left,b->left) and comparetree(a->right,b->right);
+        return comparevar(a->val,b->val) and comparetree(a->left,b->left) and comparetree(a->right,b->right);
     return false;
+}
+void display(node *root) {
+    if (root == NULL) return;
+    if (root->left) 
+        display(root->left);
+    cout<<root->val;
+    if (root->right)
+        display(root->right);
 }
 void solve(string s) {
     vector<string> exp;
@@ -242,18 +268,16 @@ void solve(string s) {
         }
     }
     vector<string> post = shunt(exp);
-    for (auto x: post) {
-        cout<<x<<endl;
-    }
     node *root = ast(post);
-    cout<<(root->val)<<" "<<root->left->val<<" "<<root->right->val<<endl;
     node *root2 = simplify(root);
     while (!comparetree(root,root2)) {
+        display(root);
         root = root2;
         root2 = simplify(root2);
     }
-    cout<<(root->val)<<endl;
+    cout<<"end\n";
 }
+
 int main() {
     string s;
     cin>>s;
