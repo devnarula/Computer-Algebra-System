@@ -61,6 +61,9 @@
 #include <utility>
 #include <valarray>
 #include <vector>
+#include "add.h"
+#include "sub.h"
+#include "display.h"
 
 #if __cplusplus >= 201103L
 #include <array>
@@ -127,4 +130,3 @@
 #endif
 #include <stdatomic.h>
 #endif
-message.txt 3 KB
